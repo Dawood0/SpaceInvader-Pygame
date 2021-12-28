@@ -35,7 +35,14 @@ enemyy=random.randint(0,350)
 enemyx_change=0.1
 enemyy_change=0.1
 
-
+# bullet
+bullet=pygame.image.load("bullet.png")
+bullet=pygame.transform.rotate(bullet,90)
+bullet=pygame.transform.scale(bullet,(35,35))
+bulletx=0
+bullety=0
+bulletx_change=0
+bullety_change=0.5
 
 def Player():
     screen.blit(player,(playerx+playerx_change,playery+playery_change))       # means to draw on the screen
@@ -43,6 +50,10 @@ def Player():
 def Enemy(x,y):
     screen.blit(enemy,(x,y))
 
+def Bullet(x,y):
+    screen.blit(bullet,(x,y))
+
+kills=0
 
 # while loop for continuous running game
 game = True
@@ -59,29 +70,38 @@ while game:
         if event.type == pygame.KEYDOWN:        # if key is pressed down
             if event.key == pygame.K_ESCAPE: pygame.quit()
             if event.key == pygame.K_LEFT:
-                print("left pressed")
-                playerx_change -= 0.1
+                # print("left pressed")
+                playerx_change -= 0.2
             if event.key == pygame.K_RIGHT:
-                playerx_change = 0.1
-                print("righht pressed")
+                playerx_change = 0.2
+                # print("righht pressed")
             if event.key == pygame.K_UP:
-                print("up pressed")
-                playery_change -= 0.1
+                # print("up pressed")
+                playery_change -= 0.2
             if event.key == pygame.K_DOWN:
-                playery_change = 0.1
-                print("down pressed")
+                playery_change = 0.2
+                # print("down pressed")
+
+
+
 
         if event.type == pygame.KEYUP:          # if key is released
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerx_change =0
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 playery_change = 0
+            if event.key == pygame.K_SPACE:
+                bulletx=playerx
+                bullety=playery
+
 
     playerx += playerx_change
     playery += playery_change
 
     enemyx += enemyx_change
     # enemyy += enemyy_change
+
+    bullety-=bullety_change
 
     # preventing the player from going out of bounds
     if playerx>screen.get_size()[0]-50 or playerx<0: playerx-=playerx_change
@@ -93,6 +113,18 @@ while game:
         enemyy+=10
     if enemyy>screen.get_size()[1]-50 or enemyy<0: enemyy_change=-1*enemyy_change
 
+
+    # collision
+    if abs(bulletx-enemyx)<20 and abs(bullety-enemyy)<20:
+        enemyx=random.randint(0,450)
+        enemyy=random.randint(0,350)
+        kills+=1
+        print(kills)
+
+
+
     Player()
     Enemy(enemyx,enemyy)
+    Bullet(bulletx-5,bullety)
+    Bullet(bulletx+20,bullety)
     pygame.display.update()
